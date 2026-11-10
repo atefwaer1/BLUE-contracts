@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ar"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon.png"><link rel="icon" href="icon.png">
+<meta name="theme-color" content="#1c077c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="عقود بلو">
+<title>عقود بلو</title>
+<style>
+/* Layout: single column form of cards, one primary action at the bottom. Navy taken from the Blue Real Estate logo. */
+:root{--bg:#f3f4f9;--card:#ffffff;--fg:#1a1a2e;--muted:#5b5b78;--line:#d6d8e8;--accent:#1c077c;--on-accent:#ffffff;--font:Tahoma,"Segoe UI",Arial,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#10101c;--card:#1a1a2c;--fg:#ececf6;--muted:#a3a3c2;--line:#33344f;--accent:#7b6cf0;--on-accent:#10101c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10101c;--card:#1a1a2c;--fg:#ececf6;--muted:#a3a3c2;--line:#33344f;--accent:#7b6cf0;--on-accent:#10101c;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 24px}
+header{background:var(--accent);color:var(--on-accent);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding:14px max(16px,env(safe-area-inset-left,0px));text-align:center;font-size:20px;font-weight:700}
+.box{max-width:720px;margin:12px auto;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+h3{margin:0 0 6px;color:var(--accent);font-size:17px}
+label{display:block;font-size:14px;margin-top:8px;color:var(--muted)}
+input,select{width:100%;min-width:0;padding:11px;margin-top:3px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>div{flex:1 1 160px;min-width:0}
+button{width:100%;padding:14px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font:inherit;font-size:18px;font-weight:700;cursor:pointer}
+#msg{min-height:1.5em;text-align:center;color:var(--muted);margin:0}
+</style>
+</head><body>
+<header>بلو | عقد إيجار شقة مفروشة</header>
+<div class="box">
+<div class="card"><h3>التاريخ</h3>
+<div class="row"><div><label>اليوم</label><input id="day"></div><div><label>الموافق</label><input id="date"></div></div></div>
+
+<div class="card"><h3>المالك (الطرف الأول)</h3>
+<label>الاسم</label><input id="o_name">
+<div class="row"><div><label>الجنسية</label><select id="o_nat"><option>مصري</option><option>سعودي</option><option>إماراتي</option><option>كويتي</option><option>قطري</option><option>بحريني</option><option>عماني</option><option>يمني</option><option>عراقي</option><option>سوري</option><option>لبناني</option><option>أردني</option><option>فلسطيني</option><option>سوداني</option><option>ليبي</option><option>تونسي</option><option>جزائري</option><option>مغربي</option><option>موريتاني</option><option>صومالي</option><option>جيبوتي</option><option>جزر القمر</option><option>تركي</option><option>إيراني</option><option>باكستاني</option><option>هندي</option><option>بنغلاديشي</option><option>أفغاني</option><option>صيني</option><option>ياباني</option><option>كوري</option><option>إندونيسي</option><option>ماليزي</option><option>فلبيني</option><option>روسي</option><option>أوكراني</option><option>بولندي</option><option>ألماني</option><option>فرنسي</option><option>إيطالي</option><option>إسباني</option><option>برتغالي</option><option>بريطاني</option><option>أيرلندي</option><option>هولندي</option><option>بلجيكي</option><option>سويسري</option><option>نمساوي</option><option>يوناني</option><option>سويدي</option><option>نرويجي</option><option>دنماركي</option><option>فنلندي</option><option>أمريكي</option><option>كندي</option><option>مكسيكي</option><option>برازيلي</option><option>أرجنتيني</option><option>كولومبي</option><option>أسترالي</option><option>نيوزيلندي</option><option>جنوب أفريقي</option><option>نيجيري</option><option>إثيوبي</option><option>كيني</option><option>غاني</option><option>إريتري</option><option>تشادي</option><option>أخرى</option></select></div><div><label>الرقم القومي</label><input id="o_id" inputmode="numeric"></div></div>
+<label>العنوان</label><input id="o_addr">
+<label>تليفون المالك</label><input id="o_ph" inputmode="tel"></div>
+
+<div class="card"><h3>المستأجر (الطرف الثاني)</h3>
+<label>الاسم</label><input id="t_name">
+<div class="row"><div><label>الجنسية</label><select id="t_nat"><option>مصري</option><option>سعودي</option><option>إماراتي</option><option>كويتي</option><option>قطري</option><option>بحريني</option><option>عماني</option><option>يمني</option><option>عراقي</option><option>سوري</option><option>لبناني</option><option>أردني</option><option>فلسطيني</option><option>سوداني</option><option>ليبي</option><option>تونسي</option><option>جزائري</option><option>مغربي</option><option>موريتاني</option><option>صومالي</option><option>جيبوتي</option><option>جزر القمر</option><option>تركي</option><option>إيراني</option><option>باكستاني</option><option>هندي</option><option>بنغلاديشي</option><option>أفغاني</option><option>صيني</option><option>ياباني</option><option>كوري</option><option>إندونيسي</option><option>ماليزي</option><option>فلبيني</option><option>روسي</option><option>أوكراني</option><option>بولندي</option><option>ألماني</option><option>فرنسي</option><option>إيطالي</option><option>إسباني</option><option>برتغالي</option><option>بريطاني</option><option>أيرلندي</option><option>هولندي</option><option>بلجيكي</option><option>سويسري</option><option>نمساوي</option><option>يوناني</option><option>سويدي</option><option>نرويجي</option><option>دنماركي</option><option>فنلندي</option><option>أمريكي</option><option>كندي</option><option>مكسيكي</option><option>برازيلي</option><option>أرجنتيني</option><option>كولومبي</option><option>أسترالي</option><option>نيوزيلندي</option><option>جنوب أفريقي</option><option>نيجيري</option><option>إثيوبي</option><option>كيني</option><option>غاني</option><option>إريتري</option><option>تشادي</option><option>أخرى</option></select></div><div><label>الرقم القومي / جواز السفر</label><input id="t_id"></div></div>
+<label>العنوان</label><input id="t_addr">
+<label>تليفون المستأجر</label><input id="t_ph" inputmode="tel"></div>
+
+<div class="card"><h3>العقار</h3>
+<div class="row"><div><label>رقم العقار</label><input id="bld"></div><div><label>رقم الشقة</label><input id="apt"></div></div>
+<label>الكمبوند</label><input id="comp">
+<div class="row"><div><label>المنطقة</label><select id="area_s" onchange="areaChange()"></select><input id="area_x" placeholder="اكتب المنطقة" hidden></div><div><label>قسم الشرطة</label><select id="police_s" onchange="polChange()"></select><input id="police_x" placeholder="اكتب القسم" hidden></div></div><input id="area" type="hidden"><input id="police" type="hidden"></div>
+
+<div class="card"><h3>المدة والمبالغ</h3>
+<div class="row"><div><label>المدة</label><select id="dur" onchange="calcTo()"><option>سنة</option><option>سنتين</option><option>ثلاث سنوات</option><option>أربع سنوات</option><option>خمس سنوات</option></select></div></div>
+<div class="row"><div><label>من تاريخ</label><input id="from" placeholder="1/12/2026" oninput="calcTo()"></div><div><label>إلى تاريخ</label><input id="to" placeholder="30/11/2027"></div></div>
+<label>الأجرة الشهرية (بالأرقام)</label><input id="rent" inputmode="numeric">
+<label>مقدم الإيجار (قيمة شهر)</label><input id="adv" inputmode="numeric">
+<label>التأمين</label><input id="dep" inputmode="numeric"></div>
+
+<div class="card"><h3>إضافي</h3>
+<label>المحكمة</label><input id="court" value="اكتوبر">
+<label>رقم واتساب المالك (مرسل الفيديو)</label><input id="v_from" inputmode="tel">
+<label>رقم واتساب المستأجر (مستقبل الفيديو)</label><input id="v_to" inputmode="tel"></div>
+
+<button id="go" type="button" onclick="make()">إنشاء العقد (ملف وورد)</button>
+<p id="msg" role="status"></p>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const v=id=>(document.getElementById(id).value||"").trim();
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const thousands=n=>{const x=parseFloat(String(n).replace(/,/g,""));return isNaN(x)?n:x.toLocaleString("en-US")};
+const ON=["","واحد","اثنان","ثلاثة","أربعة","خمسة","ستة","سبعة","ثمانية","تسعة","عشرة","أحد عشر","اثنا عشر","ثلاثة عشر","أربعة عشر","خمسة عشر","ستة عشر","سبعة عشر","ثمانية عشر","تسعة عشر"];
+const TN=["","","عشرون","ثلاثون","أربعون","خمسون","ستون","سبعون","ثمانون","تسعون"];
+const HN=["","مائة","مائتان","ثلاثمائة","أربعمائة","خمسمائة","ستمائة","سبعمائة","ثمانمائة","تسعمائة"];
+function t999(n){const p=[];const h=Math.floor(n/100),r=n%100;if(h)p.push(HN[h]);if(r){if(r<20)p.push(ON[r]);else{const o=r%10;p.push((o?ON[o]+" و":"")+TN[Math.floor(r/10)])}}return p.join(" و")}
+function grp(n,one,two,pl,sg){if(!n)return"";if(n===1)return one;if(n===2)return two;return t999(n).replace(/مائتان$/,"مائتا")+" "+(n<=10?pl:sg)}
+function tafqeet(x){let n=Math.floor(parseFloat(String(x).replace(/,/g,"")));if(!n||n<0||n>999999999)return"";const m=Math.floor(n/1e6),k=Math.floor(n%1e6/1000),r=n%1000;return[grp(m,"مليون","مليونان","ملايين","مليون"),grp(k,"ألف","ألفان","آلاف","ألف"),r?t999(r):""].filter(Boolean).join(" و")}
+const money=x=>{const w=tafqeet(x);return thousands(x)+") "+w+" جنيهاً"};
+const rd=d=>String(d).replace(/[\/\-.]/g,"\u200F/\u200F");
+const sp=n=>" ".repeat(n);
+// run: text, opts {b,u,sz,font}; splits Latin digits/letters into non-rtl runs like the original
+function run(t,o={}){
+ if(t==="")return"";
+ const sz=o.sz||24;
+ const font=o.font?`<w:rFonts w:ascii="${o.font}" w:hAnsi="${o.font}" w:cs="${o.font}"/>`:"";
+ const mk=(txt,rtl)=>`<w:r><w:rPr>${font}${o.b?"<w:b/><w:bCs/>":""}${o.u?'<w:u w:val="single"/>':""}<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/>${rtl?'<w:rtl w:val="true"/>':""}<w:lang w:bidi="ar-EG"/></w:rPr><w:t xml:space="preserve">${esc(txt)}</w:t></w:r>`;
+ return String(t).split(/([0-9A-Za-z][0-9A-Za-z.,\/\-+@]*)/).filter(x=>x!=="").map(x=>/^[0-9A-Za-z]/.test(x)?mk(x,false):mk(x,true)).join("");
+}
+function para(runs,o={}){
+ const bidi=o.nobidi?"":'<w:bidi w:val="1"/>';
+ const ind=o.ind?`<w:ind ${o.hang?`w:hanging="${o.hang}" `:""}w:start="${o.ind}" w:end="0"/>`:'<w:ind w:end="0"/>';
+ const sc=o.line?`<w:spacing w:lineRule="auto" w:line="${o.line}"/>`:"";
+ return `<w:p><w:pPr><w:pStyle w:val="Normal"/>${bidi}${sc}${o.center?"":ind}<w:jc w:val="${o.jc||"both"}"/></w:pPr>${runs}</w:p>`;
+}
+function build(){
+ const val=(id,def="")=>v(id)||def;
+ const rent=thousands(val("rent")),adv=thousands(val("adv")),dep=thousands(val("dep"));
+ const B={b:1},A={font:"Arial"},AB={font:"Arial",b:1};
+ const P=[];
+ P.push(`<w:p><w:pPr><w:pStyle w:val="Normal"/><w:bidi w:val="1"/><w:spacing w:lineRule="auto" w:line="240"/><w:jc w:val="center"/></w:pPr>${run("عــقــد  إيجـــار شقة مفروشة",{b:1,sz:32})}</w:p>`);
+ P.push(`<w:p><w:pPr><w:pStyle w:val="Normal"/><w:bidi w:val="1"/><w:spacing w:lineRule="auto" w:line="240"/><w:jc w:val="center"/></w:pPr>${run("فى ظل أحكام القانون 4 لسنة 1996",{b:1,u:1})}</w:p>`);
+ P.push(para(run("إنه فى يـوم    :",B)+run(sp(9)+val("day"))+run(sp(24),{})+run("المـوافـــــق  :   ",B)+run(val("date")),{ind:117,line:240}));
+ const tc=(w,r)=>`<w:tc><w:tcPr><w:tcW w:w="${w}" w:type="dxa"/></w:tcPr><w:p><w:pPr><w:pStyle w:val="Normal"/><w:bidi w:val="1"/><w:spacing w:lineRule="auto" w:line="240"/><w:jc w:val="start"/></w:pPr>${r}</w:p></w:tc>`;
+ const tbl=(ws,rows)=>`<w:tbl><w:tblPr><w:tblW w:w="${ws[0]+ws[1]}" w:type="dxa"/><w:bidiVisual/><w:tblInd w:w="117" w:type="dxa"/><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid><w:gridCol w:w="${ws[0]}"/><w:gridCol w:w="${ws[1]}"/></w:tblGrid>${rows.map(r=>`<w:tr>${tc(ws[0],r[0])}${tc(ws[1],r[1])}</w:tr>`).join("")}</w:tbl>`;
+ const W=[6300,4400];
+ P.push(tbl(W,[
+  [run("قد أجر السيد  : ",B)+run(val("o_name"),B),run("التابع لدولـة  : ",B)+run(val("o_nat"))],
+  [run("العنوان        : ",B)+run(val("o_addr")),run("الرقم القومى :  ",B)+run(val("o_id"))],
+  [run("إلى السيد      : ",B)+run(val("t_name"),B),run("التابع لدولـة  : ",B)+run(val("t_nat"))],
+  [run("العنوان        : ",B)+run(val("t_addr")),run("الرقم القومى :  ",B)+run(val("t_id"))]]));
+ P.push(para(run("ما هو شقة  مفروش بقصد إستعمالها سكنى  بالعقار رقم  (",AB)+run(val("bld"),A)+run(")  شقه رقم (",AB)+run(val("apt"),A)+run(")  كمبوند (",AB)+run(val("comp"),A)+run(")",AB),{ind:117,line:240}));
+ P.push(para(run("التابع لمنطقة  :",AB)+run(" "+val("area")+sp(10))+run("   قسم شرطة : ",AB)+run(val("police")),{ind:117,line:240}));
+ P.push(para(run("وقد قرر المؤجر بأن العقار الجارى تأجيره مستوف جميع لوازمه من أبواب وشبابيك وزجاج وكوالين بمفاتيحها وخلافه وقد اعترف المستأجر بمعاينة العقار المذكور وأنه خال من أى خلل موافق لسكنه وقد إتفق المتعاقدين وهما بكامل الأهلية على البنود الأتية :"),{ind:117}));
+ const bn=(n,t,o)=>para(run("بند "+n+" :",B)+t,o);
+ P.push(para(run("بند 1 :",B)+run("  مدة الإيجار هى ")+run(val("dur","سنة")+" ",B)+run("تبدأ من ")+run(rd(val("from"))+"  ")+run("وتنتهى فى ")+run(rd(val("to"))+"  ")+run("ولايجوز تجديدها إلا بموافقة من الطرفين")+run(" .",B),{ind:684,hang:567,line:360,jc:"start"}));
+ P.push(bn(2,run(" الأجرة المتفق عليها هى مبلغ ("+money(val("rent"))+" لاغير ."),{ind:684,hang:567,line:360}));
+ P.push(bn(3,run("تقاضى الطرف الأول ( المالك ) من الطرف الثانى ( المستأجر ) مبلغ وقدرة  ")+run("(",B)+run(money(val("adv"))+"  لا غير قيمه شهر الايجار ."),{ind:684,hang:567,line:240,jc:"start"}));
+ P.push(bn(4,run(" تقاضى الطرف الاول من الطرف الثانى مبلغ وقدرة  ("+money(val("dep"))+"  لا غير كتأمين يسترد فى نهاية المده  فى حاله تسليم الوحده على الحاله التى سلمت عليها فى بداية المده وتسديد قيمة إستهلاكات المياه والكهرباء عن الفترة المذكورة ."),{ind:825,hang:708,line:240}));
+ const T=[
+ [5," لا يجوز للمستأجر إحداث تغير بالعين المؤجرة بدون إذن المالك كتابة وإذا خالف فللمالك الحق فى أن يفسخ العقد ويلزمه بالعطل والأضرار  والمصاريف التى تحدث .",684,567,"both"],
+ [6," يلتزم المستأجر بإستعمال العين المؤجرة وفقأ للبنود المتفق عليها بالعقد وأن يحافظ عليها ويراعيها كما يراعى الأنسان  ماله الخاص وإذا خالف يحق للمالك أن يفسخ العقد ويلزمه بالعطل  والأضرار والمصاريف .",684,567,"start"],
+ [7," إذا ترك المستأجر العين المؤجرة قبل انتهاء نصف المدة الإيجارية فللمالك الحق فى عدم رد قيمة التأمين المتفق عليها .",684,567,"both"],
+ [8," جميع ما ينفقة المستأجر بعد إستلام العين المؤجرة من دهانات أو لصق ورق  أو ديكور وخلافه لا يلزم المالك بشئ منها  ولا يحق للمستأجر أن يطلب قيمتها عند خروجه منها بل يكون متبرعا  بها للمالك . ",684,567,"both"],
+ [9," يلتزم المستأجر برد العين المؤجرة للمالك فى حالة إنتهاء مدة التعاقد وذلك بالحالة التى كانت عليها وقت التسليم ويتحمل كافة النفقات إذا حدث للعين تلف أو هلاك يرجع إلى خطأ المستأجر . ",825,708,"both"]];
+ T.forEach(([n,t,i,h,j])=>P.push(bn(n,run(t),{ind:i,hang:h,line:240,jc:j})));
+ P.push(bn(10,run(" تسلم الطرف الثانى العين المؤجرة بمنقولاتها بتاريخ التعاقد وذلك على سبيل الامانة لاستعمالها فى الغرض الذى خصصت له العين ويلتزم بردها فى نهاية المدة المتفق عليها بحالتها ، وفى حالة التسبب فى وجود ضرر بالعين المؤجرة يحق للطرف الاول حجز التأمين كتعويض فضلا عن رجوعه على الطرف الثانى بتكملة التعويض لضبط ما ناله من ضرر ما لم يتم التصالح بينهما على تقدير ذلك .",{font:"Times New Roman"}),{ind:684,hang:567,line:360}));
+ P.push(bn(11,run(" إذا حدث أمر مخل بالعين المؤجرة فللمالك الحق فى إخراج الساكن من العين بمجرد التنبيه عليه شفويا ويحق له فسخ العقد "),{ind:684,hang:567,line:240}));
+ P.push(bn(12,run(" يلتزم المستأجر بدفع قيمة فواتير المياه والكهرباء ")+run("والتليفون و فرق الصيانه الاعتيادية الخاصه بالشقه و التى يقرها اداره الكومباوند.",A),{ind:117,line:240}));
+ P.push(bn(13,run(" يخضع هذا العقد لأحكام القانون رقم 4 لسنة 1996 بشأن سريان أحكام القانون المدنى على الأماكن التى لم سبق تأجيرها والأماكن التى أنتهت أو تنتهى عقود أيجارها . "),{ind:825,hang:708,line:240}));
+ P.push(bn(14,run(" تختص محكمة ")+run("( "+val("court","اكتوبر")+" )")+run(" الإبتدائية وجزئيتها بالنظر فيما ينشأ من منازعات أو خلافه حول بنود العقد وقد تحرر هذا العقد من نسختين  بيد كل   من الطرفين نسخة للعمل بموجبها. "),{ind:825,hang:708,line:360}));
+ P.push(para(run("بند 15:",{b:1,u:1})+run(" ",{u:1})+run("( بنود إضافى  ) .",{b:1,u:1}),{ind:117,line:480,jc:"start"}));
+ P.push(para(run("1 -",B)+run("  بمجرد التوقيع على هذا العقد فيعتبر بمثابة محضر استلام للعين المؤجره."),{ind:117,line:240,jc:"start"}));
+ P.push(para(run("2-",B)+run(" تم إرسال فيديو من طرف المالك   ( "+val("v_from")+" ) إلى رقم ( "+val("v_to")+" ) طرف المستأجر عن طريق الواتس اب وذلك لتوضيح حالة ومحتويات الشقة المذكورة وقت الإستلام  . "),{ind:117,line:240,jc:"start"}));
+ if($("dur").selectedIndex>0)P.push(para(run("3-",B)+run(" تم الاتفاق على زيادة سنوية قدرها 10% يتم احتسابها بداية من السنة الثانية من التعاقد ."),{ind:117,line:240,jc:"start"}));
+ const empty=()=>para("",{ind:117,line:240,jc:"start"});
+ P.push(empty());P.push(empty());
+ P.push(para(run(" وسائل الاتصال :",{b:1,u:1})+run("      تليـفون المــالك : ")+run(val("o_ph")+sp(10),{b:1,sz:28})+run(sp(10),{sz:18})+run("تليفون المستأجر   : ")+run(val("t_ph")),{ind:117,line:240,jc:"start"}));
+ P.push(empty());P.push(empty());
+ P.push(tbl([5350,5350],[
+  [run("الطرف الأول ( المالك )",B),run("الطرف الثانى ( المستأجر )",B)],
+  [run("الأســـم : ",B)+run(val("o_name","...........................................")),run("الأســـم : ",B)+run(val("t_name","........................................."))],
+  [run("التوقيع : ",B)+run("..........................................."),run("التوقيع : ",B)+run("..........................................")]]));
+ P.push(para("",{ind:117,line:240,jc:"start"}));
+ const sect='<w:sectPr><w:pgSz w:w="11906" w:h="17123"/><w:pgMar w:left="540" w:right="477" w:gutter="0" w:header="0" w:top="1440" w:footer="0" w:bottom="1440"/><w:pgBorders w:display="allPages" w:offsetFrom="page"><w:top w:val="single" w:sz="4" w:space="24" w:color="000000"/><w:left w:val="single" w:sz="4" w:space="24" w:color="000000"/><w:bottom w:val="single" w:sz="4" w:space="24" w:color="000000"/><w:right w:val="single" w:sz="4" w:space="24" w:color="000000"/></w:pgBorders><w:bidi/><w:textDirection w:val="lrTb"/></w:sectPr>';
+ return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+P.join("")+sect+'</w:body></w:document>';
+}
+const STYLES='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Times New Roman" w:cs="Arial"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="200" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/><w:pPr><w:widowControl/><w:spacing w:lineRule="auto" w:line="276" w:before="0" w:after="200"/></w:pPr></w:style></w:styles>';
+const CT='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>';
+const RELS='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+const DRELS='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+
+const AREAS={"الشيخ زايد":["قسم شرطة الشيخ زايد"],"أكتوبر":["قسم أول أكتوبر","قسم ثان أكتوبر"],"التجمع":["قسم أول التجمع","قسم ثان التجمع","قسم ثالث التجمع"],"أخرى":[]};
+const $=id=>document.getElementById(id);
+const fill=(sel,arr)=>{sel.innerHTML=arr.map(x=>"<option>"+x+"</option>").join("")};
+function polChange(){const o=$("police_s").value==="أخرى";$("police_x").hidden=!o;sync()}
+function areaChange(){const a=$("area_s").value;fill($("police_s"),[...AREAS[a],"أخرى"]);$("area_x").hidden=a!=="أخرى";polChange()}
+function sync(){$("area").value=$("area_s").value==="أخرى"?$("area_x").value:$("area_s").value;$("police").value=$("police_s").value==="أخرى"?$("police_x").value:$("police_s").value}
+["area_x","police_x"].forEach(i=>$(i).addEventListener("input",sync));
+const fmt=d=>d.getDate()+"/"+(d.getMonth()+1)+"/"+d.getFullYear();
+function calcTo(){const m=$("from").value.trim().match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);if(!m)return;const y=$("dur").selectedIndex+1;const d=new Date(+m[3]+y,+m[2]-1,+m[1]);d.setDate(d.getDate()-1);$("to").value=fmt(d)}
+(function init(){fill($("area_s"),Object.keys(AREAS));areaChange();const t=new Date();$("day").value=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"][t.getDay()];$("date").value=fmt(t);$("from").value=fmt(t);calcTo()})();
+async function make(){
+ const msg=document.getElementById("msg");
+ try{
+  const z=new JSZip();
+  z.file("[Content_Types].xml",CT);z.folder("_rels").file(".rels",RELS);
+  const w=z.folder("word");w.file("document.xml",build());w.file("styles.xml",STYLES);w.folder("_rels").file("document.xml.rels",DRELS);
+  const buf=await z.generateAsync({type:"blob",mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+  const name="عقد إيجار - "+(document.getElementById("t_name").value||"مستأجر")+".docx";
+  const url=URL.createObjectURL(buf);const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);
+  msg.textContent="تم تنزيل الملف.";
+ }catch(e){msg.textContent=(e&&e.code==="declined")?"تم إلغاء الحفظ.":"تعذر الحفظ: "+((e&&e.message)||e)}
+}
+</script>
+
+</body></html>
