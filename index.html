@@ -23,6 +23,10 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid 
 .hint{font-size:13px;color:var(--muted);margin:6px 0 0}
 button{width:100%;padding:14px;border:0;border-radius:10px;background:var(--accent);color:var(--on-accent);font:inherit;font-size:18px;font-weight:700;cursor:pointer}
 button:disabled{opacity:.5;cursor:not-allowed}
+.sec{background:var(--card);color:var(--accent);border:2px solid var(--accent);font-size:16px;padding:11px}
+.sec.on{background:var(--accent);color:var(--on-accent)}
+#vtext{margin-top:10px;resize:vertical}
+.filled{outline:2px solid var(--accent);outline-offset:1px}
 #msg{min-height:1.5em;text-align:center;color:var(--muted);margin:0}
 #dl{display:block;text-align:center;color:var(--accent);font-weight:700}
 </style>
@@ -40,6 +44,12 @@ button:disabled{opacity:.5;cursor:not-allowed}
 </select>
 <div data-for="furn"><label>نوع الإيجار</label><select id="term" onchange="durFill()"><option value="long">طويل (بالسنين)</option><option value="short">قصير (بالشهور)</option></select></div>
 </div>
+
+<div class="card" id="vcard"><h3>املا بالصوت</h3>
+<p class="hint">دوس "ابدأ الكلام" وقول البيانات بأسامي الخانات، مثلاً:<br>«المالك أحمد محمد علي، الرقم القومي ٢٨٤٠٨١٠٨٨٠٠٤٢٣، العنوان الشيخ زايد، التليفون ٠١٠٠٠٠٠٠٠٠٠، المستأجر محمود حسن، الرقم القومي ...، رقم العقار ١٢، الشقة ٥، الكمبوند بيفرلي هيلز، الإيجار ٢٥ ألف، المدة سنتين، يبدأ من ١ ديسمبر، المقدم شهرين، التأمين ٢٥ ألف»</p>
+<div class="row"><div><button id="mic" type="button" class="sec" onclick="micToggle()">ابدأ الكلام</button></div><div><button type="button" class="sec" onclick="voiceFill()">املا الخانات</button></div></div>
+<textarea id="vtext" rows="4" placeholder="الكلام هيتكتب هنا، وتقدر تكتب أو تصلّح فيه بإيدك"></textarea>
+<p id="vmsg" class="hint" role="status"></p></div>
 
 <div class="card"><h3>التاريخ</h3>
 <div class="row"><div><label>اليوم</label><input id="day"></div><div><label>الموافق</label><input id="date"></div></div></div>
@@ -167,6 +177,153 @@ function typeChange(){const t=T();const sell=t==="sale"||t==="promise";$("h1").t
 const sub=(a,b)=>{const x=num(v(a)),y=num(v(b));return isNaN(x)||isNaN(y)?"":(x-y).toLocaleString("en-US")};
 function saleCalc(){$("s_rest").value=sub("s_total","s_paid");$("s_ref").value=sub("s_paid","s_pen")}
 function promCalc(){$("p_chq").value=sub("p_total","p_dep")}
+// ---------- voice fill ----------
+let rec=null,listening=false;
+function micToggle(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition,b=$("mic"),m=$("vmsg");
+ if(!SR){m.textContent="المتصفح ده مش بيدعم الكلام. استخدم مايك الكيبورد واتكلم جوه المربع، وبعدين دوس املا الخانات.";return}
+ if(listening){listening=false;rec&&rec.stop();return}
+ rec=new SR();rec.lang="ar-EG";rec.continuous=true;rec.interimResults=true;
+ let base=$("vtext").value.trim();
+ rec.onresult=e=>{let fin="",tmp="";for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=t+" ";else tmp+=t}
+  if(fin){base=(base+" "+fin).trim()}$("vtext").value=(base+" "+tmp).trim()};
+ rec.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){listening=false;m.textContent="المايك مقفول. اسمح للصفحة تستخدم المايك من إعدادات المتصفح، أو استخدم مايك الكيبورد جوه المربع."}};
+ rec.onend=()=>{if(listening){try{rec.start()}catch(_){}}else{b.textContent="ابدأ الكلام";b.classList.remove("on");m.textContent="خلصت؟ راجع الكلام اللي فوق ودوس املا الخانات."}};
+ try{rec.start();listening=true;b.textContent="وقّف";b.classList.add("on");m.textContent="بسمعك... اتكلم براحتك."}catch(err){m.textContent="مقدرتش أشغّل المايك: "+err.message}
+}
+const AD="٠١٢٣٤٥٦٧٨٩";
+const clean=s=>String(s).replace(/[ً-ْـ]/g,"").replace(/[٠-٩]/g,d=>AD.indexOf(d)).replace(/[۰-۹]/g,d=>"۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+const nz=s=>s.replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي");
+const NUMW={"واحد":1,"واحده":1,"اتنين":2,"اثنين":2,"اثنان":2,"تلاته":3,"ثلاثه":3,"تلات":3,"ثلاث":3,"اربعه":4,"اربع":4,"خمسه":5,"خمس":5,"سته":6,"ست":6,"سبعه":7,"سبع":7,"تمانيه":8,"ثمانيه":8,"تمن":8,"ثمان":8,"تسعه":9,"تسع":9,"عشره":10,"عشر":10,"حداشر":11,"احدعشر":11,"اتناشر":12,"اثناعشر":12,"تلتاشر":13,"اربعتاشر":14,"خمستاشر":15,"ستاشر":16,"سبعتاشر":17,"تمنتاشر":18,"تسعتاشر":19,"عشرين":20,"عشرون":20,"تلاتين":30,"ثلاثين":30,"اربعين":40,"خمسين":50,"ستين":60,"سبعين":70,"تمانين":80,"ثمانين":80,"تسعين":90,"ميه":100,"مائه":100,"مايه":100,"ميتين":200,"مائتين":200,"تلتميه":300,"ثلاثمائه":300,"ربعميه":400,"اربعمائه":400,"خمسميه":500,"خمسمائه":500,"ستميه":600,"ستمائه":600,"سبعميه":700,"سبعمائه":700,"تمنميه":800,"ثمانمائه":800,"تسعميه":900,"تسعمائه":900};
+function parseNum(s){
+ const toks=nz(clean(s)).replace(/,/g,"").split(/\s+/).filter(Boolean);
+ let total=0,cur=0,any=false,lastMul=1;
+ for(let t of toks){
+  if(/^و./.test(t)&&!/^واحد/.test(t))t=t.slice(1);
+  if(/^\d+(\.\d+)?$/.test(t)){cur+=parseFloat(t);any=true;continue}
+  if(t in NUMW){cur+=NUMW[t];any=true;continue}
+  if(t==="الف"||t==="الاف"||t==="آلاف"){total+=(cur||1)*1000;cur=0;lastMul=1000;any=true;continue}
+  if(t==="الفين"){total+=2000;cur=0;lastMul=1000;any=true;continue}
+  if(t==="مليون"||t==="ملايين"){total+=(cur||1)*1e6;cur=0;lastMul=1e6;any=true;continue}
+  if(t==="مليونين"){total+=2e6;cur=0;lastMul=1e6;any=true;continue}
+  if(t==="نص"||t==="نصف"){total+=lastMul/2;any=true;continue}
+  if(t==="ربع"){total+=lastMul/4;any=true;continue}
+ }
+ return any?total+cur:NaN;
+}
+const MONTHS=["يناير","فبراير","مارس","ابريل","مايو","يونيو","يوليو","اغسطس","سبتمبر","اكتوبر","نوفمبر","ديسمبر"];
+function parseDate(s){
+ const x=nz(clean(s));
+ let m=x.match(/(\d{1,2})\D{1,3}(\d{1,2})\D{1,3}(\d{2,4})/);
+ if(m){let y=+m[3];if(y<100)y+=2000;return +m[1]+"/"+ +m[2]+"/"+y}
+ const mi=MONTHS.findIndex(n=>x.includes(n));
+ if(mi>=0){const d=x.match(/(\d{1,2})/);const dd=d?+d[1]:(/اول/.test(x)?1:NaN);const y=x.match(/(\d{4})/);
+  if(!isNaN(dd)){const now=new Date();let yy=y?+y[1]:now.getFullYear();if(!y&&new Date(yy,mi,dd)<new Date(now.getFullYear(),now.getMonth(),now.getDate()-1))yy++;return dd+"/"+(mi+1)+"/"+yy}}
+ return null;
+}
+// months / years count, e.g. "شهرين" "تلات شهور" "سنتين" "سنه"
+function parseCount(s){const x=nz(clean(s));
+ const unit=/سن(ه|تين|ين|وات)/.test(x)?"y":(/شهر|شهور|اشهر/.test(x)?"m":null);
+ let n=/سنتين|شهرين/.test(x)?2:parseNum(x.replace(/سنتين|شهرين|سنه|سنين|سنوات|شهر|شهور|اشهر/g," "));
+ if(isNaN(n))n=unit?1:NaN;return{n,unit}}
+const digits=s=>clean(s).replace(/\D/g,"");
+function pickNat(val){const x=nz(clean(val)).replace(/^ال/,"").trim();
+ for(const c of NATS){const k=nz(c).replace(/^ال/,"").replace(/ه$/,"");if(k&&x.startsWith(k))return c}
+ return null}
+function setV(id,val){const e=$(id);if(!e||val===""||val==null)return false;e.value=val;e.classList.add("filled");setTimeout(()=>e.classList.remove("filled"),2500);return true}
+function setSel(id,idx){const e=$(id);if(!e||isNaN(idx))return false;e.selectedIndex=Math.max(0,Math.min(e.options.length-1,idx));e.classList.add("filled");setTimeout(()=>e.classList.remove("filled"),2500);return true}
+function voiceFill(){
+ const raw=clean($("vtext").value).replace(/\s+/g," ").trim();
+ const msg=$("vmsg");if(!raw){msg.textContent="المربع فاضي. اتكلم الأول أو اكتب البيانات.";return}
+ const low=nz(raw);
+ // contract type from the speech
+ const TY=[["وعد بالبيع","promise"],["عقد بيع","sale"],["بيع ابتدائي","sale"],["اداري","admin"],["مكتب","admin"],["مفروش","furn"],["فاضي","empty"],["املاك","empty"]];
+ for(const[k,t]of TY){if(low.slice(0,60).includes(k)){$("type").value=t;typeChange();break}}
+ const t=T(),rentT=t==="furn"||t==="empty",sell=t==="sale"||t==="promise";
+ const pick=o=>o[t]||o.all;
+ // phrase -> action ; P=party switch, G=generic party field, F=field
+ const K=[
+  ["اسم المالك","P:o"],["المالك","P:o"],["المؤجر","P:o"],["اسم البائع","P:o"],["البائع","P:o"],["الطرف الاول","P:o"],
+  ["اسم المستاجر","P:t"],["المستاجر","P:t"],["اسم المشتري","P:t"],["المشتري","P:t"],["الطرف الثاني","P:t"],
+  ["الرقم القومي","G:id"],["رقم قومي","G:id"],["القومي","G:id"],["رقم الباسبور","G:id"],["الباسبور","G:id"],["جواز السفر","G:id"],["رقم الجواز","G:id"],
+  ["العنوان","G:addr"],["ساكن في","G:addr"],["ساكنه في","G:addr"],["عنوانه","G:addr"],
+  ["رقم التليفون","G:ph"],["رقم الموبايل","G:ph"],["التليفون","G:ph"],["الموبايل","G:ph"],["تليفونه","G:ph"],
+  ["الجنسيه","G:nat"],["جنسيته","G:nat"],["الايميل","G:mail"],["البريد الالكتروني","G:mail"],["بصفته","G:cap"],["صفته","G:cap"],
+  ["رقم العقار","F:bld"],["العقار","F:bld"],["رقم العماره","F:bld"],["العماره","F:bld"],["رقم المبني","F:bld"],["المبني","F:bld"],
+  ["رقم الشقه","F:apt"],["الشقه","F:apt"],["الكمبوند","F:comp"],["كمبوند","F:comp"],
+  ["رقم الوحده","F:unit"],["الوحده","F:unit"],["رقم المكتب","F:unit"],["المكتب","F:unit"],["الدور","F:floor"],["البلوك","F:block"],
+  ["اسم المشروع","F:proj"],["المشروع","F:proj"],["المول","F:proj"],["المساحه","F:sqm"],["المدينه","F:city"],["المحافظه","F:gov"],
+  ["المنطقه","F:area"],["قسم الشرطه","F:police"],["قسم","F:police"],["اسم الشركه","F:company"],["الشركه المالكه","F:owner"],["الشركه","F:company"],["السجل التجاري","F:cr"],["المشمولات","F:incl"],
+  ["الايجار الشهري","F:rent"],["قيمه الايجار","F:rent"],["الايجار","F:rent"],["الاجره","F:rent"],
+  ["المقدم","F:adv"],["مقدم","F:adv"],["المدفوع","F:paid"],["دفع","F:paid"],["العربون","F:dep2"],["عربون","F:dep2"],
+  ["التامين","F:dep"],["تامين","F:dep"],["الزياده السنويه","F:inc"],["الزياده","F:inc"],
+  ["المده","F:dur"],["مده العقد","F:dur"],["من تاريخ","F:from"],["يبدا من","F:from"],["تاريخ البدايه","F:from"],["بدايه العقد","F:from"],["من يوم","F:from"],["تبدا من","F:from"],["هيبدا من","F:from"],["البدايه","F:from"],
+  ["الثمن الاجمالي","F:total"],["اجمالي الثمن","F:total"],["الثمن","F:total"],["السعر","F:total"],["الشرط الجزائي","F:pen"],["المحكمه","F:court"]];
+ K.sort((a,b)=>b[0].length-a[0].length);
+ const hits=[],used=new Array(low.length).fill(false);
+ for(const[ph,act]of K){let i=0;
+  while((i=low.indexOf(ph,i))>=0){const pre=i===0?" ":low[i-1],pre2=i<2?" ":low[i-2];
+   const okStart=/[\s،,.:؛\-]/.test(pre)||((pre==="و"||pre==="ب"||pre==="ل")&&/[\s،,.]/.test(pre2));
+   const end=i+ph.length,okEnd=end>=low.length||/[\s،,.:؛\-]/.test(low[end]);
+   const skip=ph==="الشركه"&&/(مدير|صاحب|رئيس)\s*$/.test(low.slice(Math.max(0,i-8),i));
+   if(!skip&&okStart&&okEnd&&!used.slice(i,end).some(Boolean)){const st=(pre==="و"||pre==="ب"||pre==="ل")&&i>0?i-1:i;for(let k=st;k<end;k++)used[k]=true;hits.push({st,end,act})}
+   i=end}}
+ hits.sort((a,b)=>a.st-b.st);
+ let party="o";const done=[];const later=[];
+ const LBL={name:"الاسم",id:"الرقم القومي",addr:"العنوان",ph:"التليفون",nat:"الجنسية",mail:"الإيميل",cap:"بصفته"};
+ const PN={o:sell?"البائع":"المالك",t:sell?"المشتري":"المستأجر"};
+ for(let h=0;h<hits.length;h++){
+  let val=raw.slice(hits[h].end,h+1<hits.length?hits[h+1].st:raw.length).replace(/^[\s:،,.\-=]+|[\s،,.\-]+$/g,"").replace(/^(هو|هي|بتاعه|بتاعها|بتاعته|اسمه|اسمها|يساوي|قيمته|قدره)\s+/,"").replace(/\s+و$/,"").trim();
+  const[kind,f]=hits[h].act.split(":");
+  if(kind==="P"){party=f;if(val&&!/^\d/.test(val)&&setV(party+"_name",val))done.push("اسم "+PN[party]);continue}
+  if(!val)continue;
+  if(kind==="G"){const id=party+"_"+f;let ok=false;
+   if(f==="id")ok=setV(id,/[A-Za-z]/.test(val)?clean(val).replace(/[^A-Za-z0-9]/g,"").toUpperCase():digits(val));
+   else if(f==="ph")ok=setV(id,digits(val));
+   else if(f==="nat"){const c=pickNat(val);if(c)ok=setV(id,c)}
+   else if(f==="mail")ok=setV(id,val.replace(/\s+/g,"").replace(/ات$/,"").replace(/(\s|^)at(\s|$)/i,"@").replace(/دوت/g,"."));
+   else ok=setV(id,val);
+   if(ok)done.push(LBL[f]+" "+PN[party]);continue}
+  const n=parseNum(val);let ok=false,lbl=f;
+  switch(f){
+   case"bld":ok=setV(pick({furn:"bld",empty:"bld",admin:"abld",promise:"p_bld",all:"bld"}),digits(val)||val);lbl="رقم العقار";break;
+   case"apt":ok=setV(pick({promise:"p_apt",all:"apt"}),digits(val)||val);lbl="رقم الشقة";break;
+   case"comp":ok=setV(pick({promise:"p_comp",all:"comp"}),val);lbl="الكمبوند";break;
+   case"unit":ok=setV(pick({sale:"s_unit",all:"unit"}),val);lbl="رقم الوحدة";break;
+   case"floor":ok=setV("floor",val);lbl="الدور";break;
+   case"block":ok=setV("s_block",val);lbl="البلوك";break;
+   case"proj":ok=setV(pick({sale:"s_proj",all:"proj"}),val);lbl="المشروع";break;
+   case"sqm":ok=setV(pick({sale:"s_sqm",all:"sqm"}),isNaN(n)?val:String(n));lbl="المساحة";break;
+   case"city":ok=setV(pick({sale:"s_city",promise:"p_city",all:"city"}),val);lbl="المدينة";break;
+   case"gov":ok=setV(pick({sale:"s_gov",all:"gov"}),val);lbl="المحافظة";break;
+   case"company":ok=setV("company",val);lbl="الشركة";break;
+   case"owner":ok=setV(pick({promise:"p_owner",all:"s_owner"}),val);lbl="الشركة المالكة";break;
+   case"cr":ok=setV("cr_no",digits(val)||val);lbl="السجل التجاري";break;
+   case"incl":ok=setV("incl",val);lbl="المشمولات";break;
+   case"area":{if(t==="admin"){ok=setV("aloc",val)}else{const a=Object.keys(AREAS).find(k=>k!=="أخرى"&&nz(val).includes(nz(k).replace(/^ال/,"")));$("area_s").value=a||"أخرى";areaChange();if(!a)$("area_x").value=val;sync();ok=true}lbl="المنطقة";break}
+   case"police":{if(t==="admin"){ok=setV("apol",val.replace(/^شرطه\s*/,""))}else{const opts=[...$("police_s").options].map(o=>o.value);const p=opts.find(o=>o!=="أخرى"&&nz(o).includes(nz(val).replace(/^شرطه\s*/,"")));$("police_s").value=p||"أخرى";polChange();if(!p)$("police_x").value=val;sync();ok=true}lbl="قسم الشرطة";break}
+   case"rent":if(!isNaN(n)){ok=setV("rent",n.toLocaleString("en-US"));later.push("rent")}lbl="الإيجار";break;
+   case"adv":{if(t==="sale"){if(!isNaN(n))ok=setV("s_paid",n.toLocaleString("en-US"));lbl="المدفوع";break}
+    const c=parseCount(val);if(c.unit==="m"&&!isNaN(c.n)){ok=setSel("adv_m",c.n-1);later.push("adv_m")}else if(!isNaN(n)){later.push(["adv",n.toLocaleString("en-US")]);ok=true}lbl="المقدم";break}
+   case"paid":if(!isNaN(n))ok=setV("s_paid",n.toLocaleString("en-US"));lbl="المدفوع";break;
+   case"dep2":if(!isNaN(n))ok=setV("p_dep",n.toLocaleString("en-US"));lbl="العربون";break;
+   case"dep":{const c=parseCount(val);if(c.unit==="m"&&!isNaN(c.n)){if(t==="admin"){ok=setSel("dep_m",c.n-1);later.push("adv_m")}else{later.push(["depm",c.n]);ok=true}}else if(!isNaN(n)){later.push(["dep",n.toLocaleString("en-US")]);ok=true}lbl="التأمين";break}
+   case"inc":if(!isNaN(n))ok=setV("inc",String(n));lbl="الزيادة السنوية";break;
+   case"dur":{const c=parseCount(val);if(!isNaN(c.n)&&c.unit){if(t==="furn"){$("term").value=c.unit==="m"?"short":"long";durFill()}else if(c.unit==="m"&&c.n>=12){c.n=Math.round(c.n/12)}ok=setSel("dur",c.n-1);calcTo()}lbl="المدة";break}
+   case"from":{const d=parseDate(val);if(d){ok=setV("from",d);calcTo()}lbl="تاريخ البداية";break}
+   case"total":if(!isNaN(n))ok=setV(pick({promise:"p_total",all:"s_total"}),n.toLocaleString("en-US"));lbl="الثمن";break;
+   case"pen":if(!isNaN(n))ok=setV("s_pen",n.toLocaleString("en-US"));lbl="الشرط الجزائي";break;
+   case"court":ok=setV(pick({admin:"acourt",sale:"s_court",all:"court"}),val.replace(/^محكمه\s*/,""));lbl="المحكمة";break;
+  }
+  if(ok)done.push(lbl);
+ }
+ // recompute dependent amounts, then apply amounts that were said explicitly
+ if(rentT||t==="admin"){if(later.includes("rent")||later.includes("adv_m"))advCalc();
+  for(const x of later){if(Array.isArray(x)){if(x[0]==="adv")setV("adv",x[1]);if(x[0]==="dep")setV("dep",x[1]);if(x[0]==="depm"){const r=num(v("rent"));if(!isNaN(r))setV("dep",(r*x[1]).toLocaleString("en-US"))}}}}
+ if(t==="sale")saleCalc();if(t==="promise")promCalc();
+ calcTo();
+ msg.textContent=done.length?"اتملى: "+[...new Set(done)].join("، ")+". راجع الخانات قبل ما تطلّع العقد، خصوصاً الأرقام.":"مفهمتش أسامي الخانات. قول اسم الخانة قبل كل معلومة، زي: المالك ...، الرقم القومي ...";
+}
 // ---------- Word XML helpers ----------
 let SZ=24;
 function run(t,o={}){
